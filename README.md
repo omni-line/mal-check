@@ -4,7 +4,7 @@
 [![CI](https://github.com/omni-line/mal-check/actions/workflows/ci.yml/badge.svg)](https://github.com/omni-line/mal-check/actions/workflows/ci.yml)
 [![Powered by Omni Line](https://img.shields.io/badge/Powered%20by-Omni%20Line-FF4B4B?style=flat)](https://omniline.app/)
 
-**mal-check** is a fast, offline CLI that tells you whether any package in your project was **published to a public registry as malware**. It reads your lockfiles and manifests for npm, PyPI, RubyGems, NuGet, crates.io, Go, Composer, and VS Code / Open VSX extensions, and checks every package and version against an embedded snapshot of the **239,358** [OpenSSF malicious-packages](https://github.com/ossf/malicious-packages) (`MAL-`) advisories.
+**mal-check** is a fast, zero-config, offline CLI that tells you whether any package in your project was **published to a public registry as malware**. It reads your lockfiles and manifests for npm, PyPI, RubyGems, NuGet, crates.io, Go, Composer, and VS Code / Open VSX extensions, and checks every package and version against an embedded snapshot of the **239,358** [OpenSSF malicious-packages](https://github.com/ossf/malicious-packages) (`MAL-`) advisories.
 
 It's a single static Go binary with no Node, Python, or Ruby runtime and no network calls. Nothing leaves the machine.
 
