@@ -12,8 +12,8 @@ coverage.out
 coverage.html
 
 # IDE / OS
-.idea/
-.vscode/
+/.idea/
+/.vscode/
 *.swp
 .DS_Store
 

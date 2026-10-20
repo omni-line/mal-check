@@ -1,0 +1,7 @@
+{
+  // workspace recommendations
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "checkmarx.ast-results",
+  ]
+}
