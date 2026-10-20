@@ -1,0 +1,114 @@
+// Package manifest holds the file-reading helpers shared by the lockfile and
+// manifest parsers.
+package manifest
+
+import (
+	"bytes"
+	"errors"
+	"fmt"
+	"io"
+	"os"
+)
+
+// MaxFileSize bounds how much of a manifest is read into memory. Lockfiles
+// of large monorepos run to tens of MiB, so the cap is higher than omni-audit's.
+const MaxFileSize = 64 << 20
+
+// ErrTooLarge is returned by ReadFile for files above MaxFileSize.
+var ErrTooLarge = fmt.Errorf("manifest exceeds %d MiB limit", MaxFileSize>>20)
+
+var utf8BOM = []byte{0xEF, 0xBB, 0xBF}
+
+// ReadFile reads a manifest from disk. It refuses non-regular files (FIFOs,
+// devices) that could block or stream forever, enforces MaxFileSize, and
+// strips a leading UTF-8 BOM.
+//
+// Lstat runs before Open so named pipes and devices are rejected without
+// blocking on open.
+func ReadFile(path string) ([]byte, error) {
+	fi, err := os.Lstat(path)
+	if err != nil {
+		return nil, err
+	}
+	if fi.Mode()&os.ModeSymlink != 0 {
+		// Follow the symlink for the regular-file check, but only after we
+		// know the path itself is a symlink (not a FIFO/device).
+		fi, err = os.Stat(path)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if !fi.Mode().IsRegular() {
+		return nil, errors.New("not a regular file")
+	}
+
+	f, err := openRegular(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	// Re-check the opened fd against TOCTOU (path replaced between Lstat and open).
+	fi, err = f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	if !fi.Mode().IsRegular() {
+		return nil, errors.New("not a regular file")
+	}
+
+	data, err := io.ReadAll(io.LimitReader(f, MaxFileSize+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(data) > MaxFileSize {
+		return nil, ErrTooLarge
+	}
+	return bytes.TrimPrefix(data, utf8BOM), nil
+}
+
+// LineAt returns the 1-based line number of byte offset off in data.
+func LineAt(data []byte, off int) int {
+	if off < 0 {
+		return 0
+	}
+	if off > len(data) {
+		off = len(data)
+	}
+	return bytes.Count(data[:off], []byte{'\n'}) + 1
+}
+
+// JSONKeyLine returns the line of the first object key named key that appears
+// after the key named section, or 0 if either is not found. It is a textual
+// search, good enough to point humans and SARIF viewers at a declaration.
+func JSONKeyLine(data []byte, section, key string) int {
+	start := indexJSONKey(data, section, 0)
+	if start < 0 {
+		return 0
+	}
+	off := indexJSONKey(data, key, start+len(section)+2)
+	if off < 0 {
+		return 0
+	}
+	return LineAt(data, off)
+}
+
+func indexJSONKey(data []byte, key string, from int) int {
+	needle := []byte(`"` + key + `"`)
+	for from < len(data) {
+		i := bytes.Index(data[from:], needle)
+		if i < 0 {
+			return -1
+		}
+		i += from
+		j := i + len(needle)
+		for j < len(data) && (data[j] == ' ' || data[j] == '\t' || data[j] == '\r' || data[j] == '\n') {
+			j++
+		}
+		if j < len(data) && data[j] == ':' {
+			return i
+		}
+		from = i + 1
+	}
+	return -1
+}
