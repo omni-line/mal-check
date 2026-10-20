@@ -1,0 +1,68 @@
+version: 2
+
+project_name: mal-check
+
+before:
+  hooks:
+    - go mod verify
+
+builds:
+  - id: mal-check
+    main: ./cmd/mal-check
+    binary: mal-check
+    flags:
+      - -trimpath
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w -X github.com/omni-line/mal-check/internal/version.Version={{.Version}}
+
+archives:
+  - formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: checksums.txt
+
+sboms:
+  - artifacts: archive
+
+signs:
+  - cmd: cosign
+    signature: "${artifact}.sigstore.json"
+    args:
+      - sign-blob
+      - "--bundle=${signature}"
+      - "${artifact}"
+      - "--yes"
+    artifacts: checksum
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  draft: false
+  prerelease: auto

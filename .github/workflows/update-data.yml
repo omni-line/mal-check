@@ -1,0 +1,61 @@
+name: update-data
+
+# Rebuild the embedded OpenSSF malicious-packages snapshot weekly and open a
+# PR when upstream changed. Upstream adds MAL- ids daily; a release after the
+# PR merges ships them in the binary.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: stable
+
+      - name: Clone upstream
+        run: git clone --depth 1 --quiet https://github.com/ossf/malicious-packages "$RUNNER_TEMP/malicious-packages"
+
+      - name: Rebuild snapshot
+        run: go run ./scripts/update-data -src "$RUNNER_TEMP/malicious-packages" -out internal/maldb
+
+      - name: Test against the new snapshot
+        run: go test -count=1 ./...
+
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # meta.json carries a timestamp; only a changed snapshot is news.
+          if git diff --quiet -- internal/maldb/malicious.json.gz; then
+            echo "snapshot unchanged"
+            exit 0
+          fi
+          commit=$(jq -r .commit internal/maldb/meta.json)
+          records=$(jq -r .records internal/maldb/meta.json)
+          branch="data/malicious-packages-${commit:0:12}"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            echo "branch $branch already exists"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add internal/maldb/malicious.json.gz internal/maldb/meta.json
+          git commit -s -m "data: refresh malicious-packages snapshot to ${commit:0:12}" \
+            -m "${records} records from https://github.com/ossf/malicious-packages/commit/${commit}"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "data: refresh malicious-packages snapshot (${records} records)" \
+            --body "Weekly rebuild from [ossf/malicious-packages@${commit:0:12}](https://github.com/ossf/malicious-packages/commit/${commit}). Tests passed against the new snapshot in this run. PRs opened with GITHUB_TOKEN do not trigger CI; close and reopen the PR to run it before merging."
