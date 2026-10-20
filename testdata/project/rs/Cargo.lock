@@ -1,0 +1,10 @@
+version = 4
+
+[[package]]
+name = "proc-macro1"
+version = "1.0.95"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "demo"
+version = "0.1.0"
