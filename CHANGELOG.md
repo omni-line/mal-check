@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The database and version matching moved from `internal/maldb` to the public
+  package `pkg/maldb`, so other tools (omni-audit) can import it. Exported names
+  follow SemVer from this release.
+
+### Fixed
+
+- README no longer claims GitHub-advisory-based scanners miss malware; it states
+  the measured coverage difference instead (≈30k of 239k MAL- records come from
+  GitHub)
+
 ## [0.1.0] — 2026-10-21
 
 ### Added

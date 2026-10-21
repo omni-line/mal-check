@@ -1,6 +1,16 @@
 // Package maldb holds the embedded snapshot of packages published to public
 // registries as malware (OpenSSF malicious-packages, MAL- ids) and answers
 // "is this name, at this version, a known malicious package?".
+//
+//	db, err := maldb.Default()
+//	for _, rec := range db.Lookup(maldb.NPM, "@oku-ui/presence") {
+//		if maldb.Check(rec, "0.6.2") == maldb.Affected { ... }
+//	}
+//
+// It is the public API behind mal-check and omni-audit. Exported names follow
+// SemVer from v0.2.0; the snapshot contents change with every data refresh.
+// The embedded data is Apache-2.0 (OpenSSF); importers redistribute it and
+// must carry its licence and NOTICE.
 package maldb
 
 // Ecosystem ids used in findings and in the snapshot. They match the ids

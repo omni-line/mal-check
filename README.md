@@ -242,11 +242,29 @@ GitHub code scanning (findings appear as alerts with file and line annotations):
 
 Run from the repository root so SARIF paths are repository-relative. Run it **before** `npm ci` / `pip install` in the job, so a malicious package is caught before its install hook gets the runner's secrets.
 
+## Library
+
+The database and version matching are a Go package, [`pkg/maldb`](pkg/maldb), so other tools can check names without shelling out:
+
+```go
+import "github.com/omni-line/mal-check/pkg/maldb"
+
+db, err := maldb.Default() // embedded snapshot, loaded once
+for _, rec := range db.Lookup(maldb.PyPI, "Torchflow_Experimental") { // names are normalized per registry
+	switch maldb.Check(rec, "0.3.0") {
+	case maldb.Affected: // this version is malicious
+	case maldb.Unknown: // version-specific advisory, version not comparable
+	case maldb.Clean: // other versions were malicious, not this one
+	}
+}
+```
+
+[omni-audit](https://github.com/omni-line/omni-audit) uses it to report `reason=malicious`. Importing it embeds the Apache-2.0 snapshot in your binary; carry [NOTICE](NOTICE) and [LICENSES/Apache-2.0.txt](LICENSES/Apache-2.0.txt).
+
 ## Roadmap
 
 - `pom.xml` / Gradle, `bun.lock`, `Package.resolved`, `pubspec.lock`
 - `--db <file>` to check against a fresher snapshot without a new release
-- `pkg/` library API so omni-audit can report `reason=malicious` from the same data
 
 ## Contributing
 

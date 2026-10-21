@@ -61,7 +61,7 @@ This adds a `Signed-off-by:` trailer. See https://developercertificate.org/.
 | `cmd/mal-check` | CLI entrypoint |
 | `internal/cli` | Flags, validation, signal handling |
 | `internal/parse` | One `Kind` per lockfile / manifest format (the only place file names are known) |
-| `internal/maldb` | Embedded snapshot, name normalization, version matching |
+| `pkg/maldb` | Embedded snapshot, name normalization, version matching |
 | `internal/discover` | File discovery (format-agnostic) |
 | `internal/manifest` | Safe file reads (size cap, FIFO / symlink checks), line helpers |
 | `internal/scan` | Orchestration: parse, look up, fold records into findings |

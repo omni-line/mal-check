@@ -30,7 +30,7 @@ Requires Go **1.20+** (CI tests 1.20 and 1.22; releases use latest stable). Do n
 | `cmd/mal-check` | Entrypoint only |
 | `internal/cli` | Flags, validation, signals |
 | `internal/parse` | Lockfile / manifest formats, one `Kind` each |
-| `internal/maldb` | Embedded snapshot (`malicious.json.gz`, `meta.json`), `Normalize`, `Check` |
+| `pkg/maldb` | Embedded snapshot (`malicious.json.gz`, `meta.json`), `Normalize`, `Check` |
 | `internal/discover` | File walk (format-agnostic) |
 | `internal/manifest` | Safe `ReadFile`, line helpers |
 | `internal/scan` | Orchestration, lockfile-over-manifest precedence, findings |
@@ -49,7 +49,7 @@ New file formats follow "Adding a file format" in `CONTRIBUTING.md`; do not add 
 - Exit codes: `0` clean, `1` findings at or above `--min-severity` (default `medium`), `2` error (or incomplete scan with `--strict`). Do not break JSON schema fields used by CI (`findings`, `stats`, `database`, `sponsor`); new fields are additive, breaking changes bump `schema_version`.
 - Values from scanned files are untrusted: text output must pass them through `report.clean`.
 - No network access at scan time. Never download data during a scan; refresh with `make data`.
-- The snapshot is generated: never hand-edit `internal/maldb/malicious.json.gz` or `meta.json`.
+- The snapshot is generated: never hand-edit `pkg/maldb/malicious.json.gz` or `meta.json`.
 - Identity is one record per `MAL-` id. Do not merge records on aliases: upstream reuses SNYK ids across unrelated packages.
 - Fixtures use real malicious package names only, never real malicious code.
 

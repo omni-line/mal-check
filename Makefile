@@ -14,12 +14,12 @@ race:
 	go test -race -count=1 ./...
 
 # Minimum statement coverage enforced locally and in CI.
-# Scoped to ./internal/... so thin cmd/ and scripts/ packages (no tests) do not
+# Scoped to ./internal/... and ./pkg/... so thin cmd/ and scripts/ packages (no tests) do not
 # drag the total under the floor on Go 1.22+, which reports them as 0%.
 COVER_MIN ?= 80
 
 cover:
-	go test -coverprofile=coverage.out ./internal/...
+	go test -coverprofile=coverage.out ./internal/... ./pkg/...
 	@total=$$(go tool cover -func=coverage.out | tail -1 | awk '{print $$NF}' | tr -d '%'); \
 	echo "total: $${total}% (minimum $(COVER_MIN)%)"; \
 	awk -v t="$$total" -v m="$(COVER_MIN)" 'BEGIN { if ((t+0) < (m+0)) { printf "coverage %.1f%% is below %s%%\n", t, m; exit 1 } }'
@@ -42,7 +42,7 @@ MP_DIR ?= $(shell mktemp -d)
 
 data:
 	git clone --depth 1 --quiet https://github.com/ossf/malicious-packages $(MP_DIR)/malicious-packages
-	go run ./scripts/update-data -src $(MP_DIR)/malicious-packages -out internal/maldb
+	go run ./scripts/update-data -src $(MP_DIR)/malicious-packages -out pkg/maldb
 
 clean:
 	rm -rf bin dist coverage.out

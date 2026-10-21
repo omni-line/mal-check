@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/omni-line/mal-check/internal/maldb"
 	"github.com/omni-line/mal-check/internal/match"
+	"github.com/omni-line/mal-check/pkg/maldb"
 )
 
 func testDB(t *testing.T) *maldb.DB {

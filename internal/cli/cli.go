@@ -12,11 +12,11 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/omni-line/mal-check/internal/maldb"
 	"github.com/omni-line/mal-check/internal/match"
 	"github.com/omni-line/mal-check/internal/report"
 	"github.com/omni-line/mal-check/internal/scan"
 	"github.com/omni-line/mal-check/internal/version"
+	"github.com/omni-line/mal-check/pkg/maldb"
 )
 
 // stringList accumulates repeatable or comma-separated flag values.

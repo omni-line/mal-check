@@ -28,7 +28,7 @@ jobs:
         run: git clone --depth 1 --quiet https://github.com/ossf/malicious-packages "$RUNNER_TEMP/malicious-packages"
 
       - name: Rebuild snapshot
-        run: go run ./scripts/update-data -src "$RUNNER_TEMP/malicious-packages" -out internal/maldb
+        run: go run ./scripts/update-data -src "$RUNNER_TEMP/malicious-packages" -out pkg/maldb
 
       - name: Test against the new snapshot
         run: go test -count=1 ./...
@@ -38,12 +38,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # meta.json carries a timestamp; only a changed snapshot is news.
-          if git diff --quiet -- internal/maldb/malicious.json.gz; then
+          if git diff --quiet -- pkg/maldb/malicious.json.gz; then
             echo "snapshot unchanged"
             exit 0
           fi
-          commit=$(jq -r .commit internal/maldb/meta.json)
-          records=$(jq -r .records internal/maldb/meta.json)
+          commit=$(jq -r .commit pkg/maldb/meta.json)
+          records=$(jq -r .records pkg/maldb/meta.json)
           branch="data/malicious-packages-${commit:0:12}"
           if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
             echo "branch $branch already exists"
@@ -52,7 +52,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$branch"
-          git add internal/maldb/malicious.json.gz internal/maldb/meta.json
+          git add pkg/maldb/malicious.json.gz pkg/maldb/meta.json
           git commit -s -m "data: refresh malicious-packages snapshot to ${commit:0:12}" \
             -m "${records} records from https://github.com/ossf/malicious-packages/commit/${commit}"
           git push origin "$branch"

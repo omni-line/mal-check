@@ -19,7 +19,7 @@ mal-check is maintained by the Omni Line team.
 
 ## Data refresh
 
-`.github/workflows/update-data.yml` rebuilds `internal/maldb/` from
+`.github/workflows/update-data.yml` rebuilds `pkg/maldb/` from
 [ossf/malicious-packages](https://github.com/ossf/malicious-packages) every Monday and
 opens a PR when the snapshot changed. The workflow runs the test suite against the new
 snapshot before opening it, but PRs opened with `GITHUB_TOKEN` do not trigger the `ci`

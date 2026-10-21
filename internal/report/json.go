@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/omni-line/mal-check/internal/maldb"
 	"github.com/omni-line/mal-check/internal/scan"
+	"github.com/omni-line/mal-check/pkg/maldb"
 )
 
 // SchemaVersion is bumped only for breaking changes to the JSON document.

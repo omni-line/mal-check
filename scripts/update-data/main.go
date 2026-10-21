@@ -2,7 +2,7 @@
 // local checkout of https://github.com/ossf/malicious-packages.
 //
 //	git clone --depth 1 https://github.com/ossf/malicious-packages /tmp/mp
-//	go run ./scripts/update-data -src /tmp/mp -out internal/maldb
+//	go run ./scripts/update-data -src /tmp/mp -out pkg/maldb
 //
 // It reads only osv/malicious/**: osv/withdrawn holds false positives, and a
 // snapshot whose every record means "malware" must not carry them. It is not
@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/omni-line/mal-check/internal/maldb"
+	"github.com/omni-line/mal-check/pkg/maldb"
 )
 
 // osvEcosystems maps OSV ecosystem names to snapshot ids (and registry, when
@@ -74,7 +74,7 @@ type osvRecord struct {
 
 func main() {
 	src := flag.String("src", "", "path to a checkout of ossf/malicious-packages")
-	out := flag.String("out", "internal/maldb", "output directory for malicious.json.gz and meta.json")
+	out := flag.String("out", "pkg/maldb", "output directory for malicious.json.gz and meta.json")
 	flag.Parse()
 	if *src == "" {
 		fmt.Fprintln(os.Stderr, "update-data: -src is required")

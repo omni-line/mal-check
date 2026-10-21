@@ -8,8 +8,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/omni-line/mal-check/internal/maldb"
 	"github.com/omni-line/mal-check/internal/scan"
+	"github.com/omni-line/mal-check/pkg/maldb"
 )
 
 // maxWarnings is how many warnings are printed without --verbose.

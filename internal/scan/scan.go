@@ -13,10 +13,10 @@ import (
 	"time"
 
 	"github.com/omni-line/mal-check/internal/discover"
-	"github.com/omni-line/mal-check/internal/maldb"
 	"github.com/omni-line/mal-check/internal/manifest"
 	"github.com/omni-line/mal-check/internal/match"
 	"github.com/omni-line/mal-check/internal/parse"
+	"github.com/omni-line/mal-check/pkg/maldb"
 )
 
 // Finding reasons.

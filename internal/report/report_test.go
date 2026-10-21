@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/omni-line/mal-check/internal/maldb"
 	"github.com/omni-line/mal-check/internal/scan"
+	"github.com/omni-line/mal-check/pkg/maldb"
 )
 
 func sample() *scan.Result {
