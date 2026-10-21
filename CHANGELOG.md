@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-10-21
+
 ### Changed
 
 - The database and version matching moved from `internal/maldb` to the public
