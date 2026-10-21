@@ -12,7 +12,7 @@ Sibling to [omni-audit](https://github.com/omni-line/omni-audit), which covers d
 
 ## The problem
 
-Vulnerability scanners (`npm audit`, Dependabot, `pip-audit`) answer "is this version of a legitimate package vulnerable?". They don't answer "is this package malware?". That covers two cases:
+Vulnerability scanners are built around one advisory source. GitHub's Advisory Database, behind `npm audit` and Dependabot, does carry malware advisories, but of the 239,358 records OpenSSF has reconciled, only about 30,000 came from GitHub. The rest were reported by Amazon Inspector, ReversingLabs, OpenSSF Package Analysis, Checkmarx, and others. mal-check checks all of them, for every ecosystem, offline. That covers two cases:
 
 - **Throwaway malware names.** Info-stealers, crypto drainers, and probe packages are published by the thousand and installed through typos, AI-suggested names, and copy-pasted commands. Every version is malicious.
 - **Hijacked legitimate packages.** `nx`, `chalk`, `debug`, `axios`, and `@oku-ui/presence` all had specific releases pushed from a compromised maintainer account. Only those versions are malicious.
