@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-10-20T20:33:01Z",
+  "generated_at": "2026-11-09T16:33:05Z",
   "source": "https://github.com/ossf/malicious-packages",
-  "commit": "349d5c41c1b78dcece775455353694a7b37ae07a",
+  "commit": "5ee040f9a31981c60ecbc09583a7c85b1b9b13a7",
   "license": "Apache-2.0",
-  "records": 239358,
+  "records": 240041,
   "ecosystems": {
-    "cargo": 21,
+    "cargo": 22,
     "composer": 1,
     "go": 20,
     "maven": 2,
-    "npm": 222373,
+    "npm": 222886,
     "nuget": 782,
-    "pypi": 11834,
-    "rubygems": 4304,
+    "pypi": 11992,
+    "rubygems": 4315,
     "vscode": 21
   }
 }
